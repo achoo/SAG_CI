@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?><DeployerSpec exitOnError="false" sourceType="Repository">
+	<DeployerServer>
+		<host>localhost:5555</host>
+		<user>Administrator</user>
+		<pwd>{AES}Y5IgMqjfvkgbg7p5VUZztw==</pwd>
+	</DeployerServer>
+  <Environment>
+		<IS>
+			<isalias name="local">
+				<host>localhost</host>
+				<port>5555</port>
+				<user>Administrator</user>
+				<pwd>{AES}Y5IgMqjfvkgbg7p5VUZztw==</pwd>
+				<useSSL>false</useSSL>
+				<installDeployerResource>true</installDeployerResource>
+				<Test>true</Test>
+			</isalias>
+		</IS>
+		<ProcessModel>
+			<pmalias name="local">
+				<host>localhost</host>
+				<port>5555</port>
+				<user>Administrator</user>
+				<pwd>{AES}Y5IgMqjfvkgbg7p5VUZztw==</pwd>
+				<useSSL>false</useSSL>
+				<Test>true</Test>
+			</pmalias>	
+		</ProcessModel>
+		<MWS>
+			<mwsalias name="local">
+				<host>localhost</host>
+				<port>8585</port>
+				<user>sysadmin</user>
+				<pwd>{AES}Y5IgMqjfvkgbg7p5VUZztw==</pwd>
+				<useSSL>false</useSSL>
+				<excludeCoreTaskEngineDependencies>true</excludeCoreTaskEngineDependencies>
+				<cacheTimeOut>0</cacheTimeOut>
+				<includeSecurityDependencies>true</includeSecurityDependencies>
+				<rootFolderAliases>folder.public</rootFolderAliases>
+				<maximumFolderObjectCount>8000</maximumFolderObjectCount>
+				<enableAddtionalLogging>true</enableAddtionalLogging>
+				<maxFolderDepth>25</maxFolderDepth>
+				<Test>true</Test>
+			</mwsalias>
+		</MWS>
+		<RulesServer>
+			<rulesserveralias name="local">
+				<host>localhost</host>
+				<port>5555</port>
+				<user>Administrator</user>
+				<pwd>{AES}Y5IgMqjfvkgbg7p5VUZztw==</pwd>
+				<useSSL>false</useSSL>
+				<Test>true</Test>
+			</rulesserveralias>
+		</RulesServer>		
+		<Repository>
+<repalias name="IS_PackageRepo">
+<type>FlatFile</type>
+<urlOrDirectory>/var/lib/jenkins/workspace/CI_Setup/target/IS_Package/build</urlOrDirectory>
+<Test>true</Test>
+</repalias>
+</Repository>	
+	</Environment>
+	
+	<Projects>
+<Project description="" ignoreMissingDependencies="true" name="IS_Package" overwrite="true" type="Repository">
+<DeploymentSet autoResolve="full" description="" name="myDeploymentSet" srcAlias="IS_PackageRepo">
+<Composite displayName="Package/Fibonachi" name="Fibonachi" srcAlias="IS_PackageRepo" type="IS"/>
+</DeploymentSet>
+<DeploymentMap description="" name="myDeploymentMap"/>
+<MapSetMapping mapName="myDeploymentMap" setName="myDeploymentSet">
+<alias type="IS">local</alias>
+</MapSetMapping>
+<DeploymentCandidate description="" mapName="myDeploymentMap" name="myDeployment"/>
+</Project>
+</Projects>
+</DeployerSpec>

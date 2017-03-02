@@ -1,0 +1,177 @@
+<?xml version="1.0"?>
+<project name="Deploy" default="deployWM" basedir=".">
+     
+	<!-- Global Variables that concern the code and should be changed only if the code is changed -->
+	<!-- Template for the Deployer Project Specification -->
+	<property name="deployerProjectDefinitionTemplate" value="resources/ProjectSpecificationTemplate.xml"/>
+	
+	<!-- Target filename of the Deployer Project Specification for this run -->
+	<property name="deployerProjectDefinition" value="temp/${projectName}DeploymentSpec.xml"/>
+	
+	<!-- XSLT for the Deployer Project Specification - adding Repository and Project Sections -->
+	<property name="initialXSLT" value="resources/setUpInitial.xslt"/>
+	
+	<!-- Template for the Deployer Project Specification -->
+	<property name="addPackagesToProjectXSLT" value="resources/addPackage.xslt"/>
+	
+	<target name="deployWM" description="main deploy task" depends="startDeployment, createDeployerSpec,execProjectAutomator,createUmQueues,triggerDeploy">
+	</target>
+	
+	<target name="startDeployment">		
+		<echo message="Start deploying ${projectName}" />
+	</target>
+		
+	<target name="createDeployerSpec" depends="cleanupDeployerSpec,setupDeployerSpec,addPackagesToDeployerSpec">		
+	</target>
+	
+	<target name="cleanupDeployerSpec">
+		<if>
+			<available file="${deployerProjectDefinition}"/>
+			<then>
+				<delete file="${deployerProjectDefinition}"/>	
+			</then>
+		</if>	
+	</target>
+	
+	<target name="setupDeployerSpec">				
+		<xslt style="${initialXSLT}" in="${deployerProjectDefinitionTemplate}" out="${deployerProjectDefinition}">
+			<param name="repoName" expression="${repositoryName}" />
+			<param name="repoPath" expression="${buildOutputDir}" />
+			<param name="projectName" expression="${projectName}" />				
+		</xslt>				
+	</target>
+	
+		
+	<target name="addPackagesToDeployerSpec">
+	    <!-- IS -->
+		<echo message="Adding IS Packages to Project Specification"/>
+		<add-assets-to-deployer-spec listPackages="${isProjectNames}" projectType="IS"/>
+		
+		<!-- IS -->
+		<echo message="Adding IS Configuratio to Project Specification"/>
+		<add-assets-to-deployer-spec listPackages="${isConfigAsset}" projectType="IS"/>
+		
+		<!-- BPM -->
+		<echo message="Adding BPM Packages to Project Specification"/>
+		<add-assets-to-deployer-spec listPackages="${bpmProjectNames}" projectType="BPM"/>
+		
+		<!-- MWS -->
+		<echo message="Adding MWS Packages to Project Specification"/>
+		<add-assets-to-deployer-spec listPackages="${mwsProjectNames}" projectType="MWS"/>
+		
+		<!-- Rules -->
+		<echo message="Adding Rule Packages to Project Specification"/>
+		<add-assets-to-deployer-spec listPackages="${rulesProjectNames}" projectType="RULES"/>
+	</target>
+		
+	<macrodef name="add-assets-to-deployer-spec">
+		<attribute name="listPackages"/>
+		<attribute name="projectType"/>		
+		<sequential>
+			<if>			
+				<equals arg1="${listPackages}" arg2="" trim="true"/>			
+				<then>
+					<!-- no package do nothing-->
+				</then>
+				<else>			    
+					<move file="${deployerProjectDefinition}" tofile="${deployerProjectDefinition}.bak"/>						
+					<xslt style="${addPackagesToProjectXSLT}" in="${deployerProjectDefinition}.bak" out="${deployerProjectDefinition}">					
+						<param name="paramPackageNames" expression="@{listPackages}" />
+						<param name="repo" expression="${repositoryName}" />
+						<param name="type" expression="@{projectType}" />			
+					</xslt>
+					<delete file="${deployerProjectDefinition}.bak"/>			
+				</else>
+			</if>	
+    	</sequential>
+	</macrodef>	
+		
+	<target name="deployerAddPackageToDeployerSpec_specific">		
+		<if>			
+			<equals arg1="${listPackages}" arg2="" trim="true"/>			
+			<then>
+				<!-- no package do nothing-->
+			</then>
+			<else>			    
+				<move file="${deployerProjectDefinition}" tofile="${deployerProjectDefinition}.bak"/>						
+				<xslt style="${addPackagesToProjectXSLT}" in="${deployerProjectDefinition}.bak" out="${deployerProjectDefinition}">					
+					<param name="paramPackageNames" expression="${listPackages}" />
+					<param name="repo" expression="${repositoryName}" />
+					<param name="type" expression="${projectType}" />			
+				</xslt>
+				<delete file="${deployerProjectDefinition}.bak"/>			
+			</else>
+		</if>	
+	</target>
+		
+	<target name="createUmQueues">
+		<!-- can be extracted later in a separate environment -->
+		<property name="jmsConnectionAlias" value="DEFAULT_IS_JMS_CONNECTION"/>
+		
+		<for list="${umQueues}" delimiter=";" param="umQueue">			
+			<sequential>
+				<echo message="Create JMS Queue @{umQueue}"/>
+				<trycatch>
+					<try>			
+						<get src="http://${deployerHost}:${deployerPort}/invoke/wm.server.jms/createQueue?aliasName=${jmsConnectionAlias}&amp;queueName=@{umQueue}&amp;override=false" 								
+							dest="temp/httpout.txt"
+							verbose="false"													
+							username="${deployerUsername}"
+							password="${deployerPassword}"
+							usetimestamp="true"/>
+					</try>
+					<catch>
+						<echo message="Creation of  JMS Queue @{umQueue} failed. Check if the queue already exists. If not - check the deployer host/port and its credentials."/>
+					</catch>
+					<finally/>				
+				</trycatch>
+			</sequential>
+		</for>		
+	</target>
+	
+		
+	<target name="execProjectAutomator">
+		<path id="pathProjectdefinition">
+			<pathelement location="${deployerProjectDefinition}" />
+		</path>
+		<pathconvert refid="pathProjectdefinition" property="pathProjectdefinitionFile"/>
+		
+				
+		<exec dir="${deployerInstallationPath}"  executable="${deployerInstallationPath}/${deployerAutomatorExecutable}" failonerror="true" resultproperty="appState">		
+			<arg value="${pathProjectdefinitionFile}" />
+		</exec>
+		
+		<if>			
+			<equals arg1="${appState}" arg2="0" trim="true"/>			
+			<then>
+				<echo message ="Project Automator successfully executed."/>
+			</then>
+			<else>			    				
+				<fail message="Project Automator failed."/>
+			</else>
+		</if>		
+	</target>
+	
+	<target name="triggerDeploy">
+		<exec executable="${deployerInstallationPath}/${deployerExecutable}" dir="${deployerInstallationPath}" failonerror="true" resultproperty="appState">
+			<arg value="--deploy"/>
+			<arg line="-project ${projectName}"/>
+			<arg line="-dc myDeployment"/>
+			<arg line="-host ${deployerHost}"/>
+			<arg line="-port ${deployerPort}"/>
+			<arg line="-user ${deployerUsername}"/>
+			<arg line="-pwd ${deployerPassword}"/>
+			<arg value="-force"/>
+		</exec>
+		
+		<if>			
+		<equals arg1="${appState}" arg2="0" trim="true"/>			
+			<then>
+				<echo message="WMDeployer successfully executed."/>
+			</then>
+			<else>			    				
+				<fail message="WMDeployer failed."/>
+			</else>
+		</if>		
+	</target>	
+</project>
