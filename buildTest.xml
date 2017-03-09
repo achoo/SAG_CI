@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <project name="test" default="startTest" basedir=".">
 
-	<!--property name="testSuitePackagesPath" value="${SAGHome}/IntegrationServer/packages/"/-->
+        <!-- temp var -->
 	<property name="testSuitePackagesPath" value="${isTestDir}"/>
 
 	<property name="testPackageDirRelative" value="resources/test/"/>
@@ -15,34 +15,42 @@
 	</path>
 	
 	<target name="startTest" depends="jenkinsCheck">		
-		<var name="faileTestList" value=""/>
+		<var name="failedTestList" value=""/>
 		
-		<for param="packageName" list="${ISTestProjectNames}" delimiter=";" keepgoing="true" trim="true">
+                <!-- interate over the test project and triiger all xml tests in the setup folder -->
+                <for param="testProject" keepgoing="true" trim="true">
+			<path>
+				<dirset dir="${testSuitePackagesPath}" includes="*" excludes=".*,replicate" />
+			</path>
 			<sequential>
 				<trycatch reference="exception_ref">
 					<try>
+                                                <echo message="@{testProject}"/>
 						<antcall target="junitTestAndReportXML">
-							<param name="testPackageName" value="${testSuitePackagesPath}/@{packageName}" />
+							<param name="testPackageName" value="@{testProject}" />
 						</antcall>
 						<!--antcall target="junitTestAndReportJava">
-							<param name="testPackageName" value="${testSuitePackagesPath}/@{packageName}" />
+							<param name="testPackageName" value="${testSuitePackagesPath}/@{testProject}" />
 						</antcall-->
 					</try>
 					<catch>
-						<echo message="JUnit test for package '@{packageName}' failed" />
-						<var name="faileTestList" value="${faileTestList}'@{packageName}', " />
+						<echo message="JUnit test for package '@{testProject}' failed" />
+						<var name="failedTestList" value="${failedTestList}'@{packageName}', " />
 						<property name="testFail" refid="exception_ref" />
 					</catch>
 				</trycatch>
 			</sequential>
 		</for>
+
+
+
 		
 		<if>
 			<not>
-				<equals arg1="${faileTestList}" arg2="" trim="true" />
+				<equals arg1="${failedTestList}" arg2="" trim="true" />
 			</not>
 			<then>
-				<fail unless="isReportingToJenkins" message="At least one test failed. Failed packages: ${faileTestList}" />
+				<fail unless="isReportingToJenkins" message="At least one test failed. Failed packages: ${failedTestList}" />
 			</then>
 			<else>
 				<echo message="All JUnit Tests passed."/>
@@ -54,9 +62,12 @@
 		<echo message="Init JUnit tests for package ${testPackageName}" />
 		
 		<property name="testPackageDir" value="${testPackageName}/${testPackageDirRelative}" />
+                <echo message="${testPackageDir}" />
 		<!--property name="testPackageXmlDir" value="${testPackageDir}/setup" /-->
-                <property name="testPackageXmlDir" value="${testPackageDir}/" />
+                <property name="testPackageXmlDir" value="${testPackageDir}" />
+                <echo message="${testPackageXmlDir}" />
 		<property name="testPackageReportsDir" value="${testPackageDir}/reports" />
+                <echo message="${testPackageReportsDir}" />
 	</target>
 	
 	<target name="junitCleanUp">

@@ -4,7 +4,6 @@
 	<property file="System.properties"/>
         
 	<import file="buildInitProject.xml"/>
-	<import file="buildProjectInfo.xml"/>
 	<import file="buildCallABE.xml"/>
 	<import file="buildDeployer.xml"/>
 	<import file="buildTest.xml"/>
@@ -12,11 +11,11 @@
 
 	<taskdef classpath="lib/ant-contrib.jar" resource="net/sf/antcontrib/antlib.xml"/>
 				
-	<target name="build" depends="initProject,collectProjectInfo,buildWM">		
+	<target name="build" depends="initProject,buildWM">		
 		<description>Build project.</description>
 	</target>
 		
-	<target name="deploy" depends="initProject,collectProjectInfo,deployWM">
+	<target name="deploy" depends="initProject,deployWM">
 		<description>Deploy project.</description>
 	</target>	
 	
@@ -24,7 +23,7 @@
 		<description>Build and deploy the project.</description>
 	</target>
 	
-	<target name="runTests" depends="initProject,collectProjectInfo,startTest">
+	<target name="runTests" depends="initProject,startTest">
 		<description>Run tests.</description>
 	</target>
 	

@@ -33,7 +33,6 @@
 	
 	<xsl:template match="DeployerSpec/Projects">
 		<Projects>
-		
 			<xsl:apply-templates select="@* | *" />
 			
 			<Project description="" ignoreMissingDependencies="true" overwrite="true" type="Repository">
@@ -41,7 +40,10 @@
 
 				<DeploymentSet autoResolve="full" description="" name="myDeploymentSet">
 				<xsl:attribute name="srcAlias"><xsl:value-of select="$repoName"/></xsl:attribute>
-						
+
+					<Composite displayName="" name="*" type="*">
+						<xsl:attribute name="srcAlias"><xsl:value-of select="$repoName"/></xsl:attribute>
+                                        </Composite> 
 				</DeploymentSet>
 				
 				<DeploymentMap description="" name="myDeploymentMap"/>			

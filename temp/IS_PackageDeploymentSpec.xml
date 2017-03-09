@@ -65,7 +65,7 @@
 	<Projects>
 <Project description="" ignoreMissingDependencies="true" name="IS_Package" overwrite="true" type="Repository">
 <DeploymentSet autoResolve="full" description="" name="myDeploymentSet" srcAlias="IS_PackageRepo">
-<Composite displayName="Package/Fibonachi" name="Fibonachi" srcAlias="IS_PackageRepo" type="IS"/>
+<Composite displayName="" name="*" srcAlias="IS_PackageRepo" type="*"/>
 </DeploymentSet>
 <DeploymentMap description="" name="myDeploymentMap"/>
 <MapSetMapping mapName="myDeploymentMap" setName="myDeploymentSet">

@@ -11,9 +11,6 @@
 	<!-- XSLT for the Deployer Project Specification - adding Repository and Project Sections -->
 	<property name="initialXSLT" value="resources/setUpInitial.xslt"/>
 	
-	<!-- Template for the Deployer Project Specification -->
-	<property name="addPackagesToProjectXSLT" value="resources/addPackage.xslt"/>
-	
 	<target name="deployWM" description="main deploy task" depends="startDeployment, createDeployerSpec,execProjectAutomator,createUmQueues,triggerDeploy">
 	</target>
 	
@@ -21,7 +18,7 @@
 		<echo message="Start deploying ${projectName}" />
 	</target>
 		
-	<target name="createDeployerSpec" depends="cleanupDeployerSpec,setupDeployerSpec,addPackagesToDeployerSpec">		
+	<target name="createDeployerSpec" depends="cleanupDeployerSpec,setupDeployerSpec">		
 	</target>
 	
 	<target name="cleanupDeployerSpec">
@@ -41,68 +38,6 @@
 		</xslt>				
 	</target>
 	
-		
-	<target name="addPackagesToDeployerSpec">
-	    <!-- IS -->
-		<echo message="Adding IS Packages to Project Specification"/>
-		<add-assets-to-deployer-spec listPackages="${isProjectNames}" projectType="IS"/>
-		
-		<!-- IS -->
-		<echo message="Adding IS Configuratio to Project Specification"/>
-		<add-assets-to-deployer-spec listPackages="${isConfigAsset}" projectType="IS"/>
-		
-		<!-- BPM -->
-		<echo message="Adding BPM Packages to Project Specification"/>
-		<add-assets-to-deployer-spec listPackages="${bpmProjectNames}" projectType="BPM"/>
-		
-		<!-- MWS -->
-		<echo message="Adding MWS Packages to Project Specification"/>
-		<add-assets-to-deployer-spec listPackages="${mwsProjectNames}" projectType="MWS"/>
-		
-		<!-- Rules -->
-		<echo message="Adding Rule Packages to Project Specification"/>
-		<add-assets-to-deployer-spec listPackages="${rulesProjectNames}" projectType="RULES"/>
-	</target>
-		
-	<macrodef name="add-assets-to-deployer-spec">
-		<attribute name="listPackages"/>
-		<attribute name="projectType"/>		
-		<sequential>
-			<if>			
-				<equals arg1="${listPackages}" arg2="" trim="true"/>			
-				<then>
-					<!-- no package do nothing-->
-				</then>
-				<else>			    
-					<move file="${deployerProjectDefinition}" tofile="${deployerProjectDefinition}.bak"/>						
-					<xslt style="${addPackagesToProjectXSLT}" in="${deployerProjectDefinition}.bak" out="${deployerProjectDefinition}">					
-						<param name="paramPackageNames" expression="@{listPackages}" />
-						<param name="repo" expression="${repositoryName}" />
-						<param name="type" expression="@{projectType}" />			
-					</xslt>
-					<delete file="${deployerProjectDefinition}.bak"/>			
-				</else>
-			</if>	
-    	</sequential>
-	</macrodef>	
-		
-	<target name="deployerAddPackageToDeployerSpec_specific">		
-		<if>			
-			<equals arg1="${listPackages}" arg2="" trim="true"/>			
-			<then>
-				<!-- no package do nothing-->
-			</then>
-			<else>			    
-				<move file="${deployerProjectDefinition}" tofile="${deployerProjectDefinition}.bak"/>						
-				<xslt style="${addPackagesToProjectXSLT}" in="${deployerProjectDefinition}.bak" out="${deployerProjectDefinition}">					
-					<param name="paramPackageNames" expression="${listPackages}" />
-					<param name="repo" expression="${repositoryName}" />
-					<param name="type" expression="${projectType}" />			
-				</xslt>
-				<delete file="${deployerProjectDefinition}.bak"/>			
-			</else>
-		</if>	
-	</target>
 		
 	<target name="createUmQueues">
 		<!-- can be extracted later in a separate environment -->
