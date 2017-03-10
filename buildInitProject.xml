@@ -6,18 +6,6 @@
 		<fail message="System property 'SAGHome' should be defined!"/>
 	</target>
 
-	<target name="initABEHome" unless="abeHome">
-		<fail message="System property 'abeHome' should be defined!"/>
-	</target>
-	
-	<target name="initABEBuildfileDir" unless="abeBuildfileDir">
-		<fail message="System property 'abeBuildfileDir' should be defined!"/>
-	</target>
-	
-	<target name="initABEBuildfileFile" unless="abeBuildfileFile">
-		<fail message="System property 'abeBuildfileFile' should be defined!"/>
-	</target>
-
 	<target name="initDeployerInstallationPath" unless="deployerInstallationPath">
 		<fail message="System property 'deployerInstallationPath' should be defined!"/>
 	</target>
@@ -55,10 +43,6 @@
 		<fail message="Property 'buildOutputDir' should be defined!"/>
 	</target>
 	
-	<target name="initABEBuildProperties" unless="abeBuildProperties">
-		<fail message="Property 'abeBuildProperties' should be defined!"/>
-	</target>
-	
 	<target name="initRepositoryName" unless="repositoryName">
 		<fail message="Property 'repositoryName' should be defined!"/>
 	</target>
@@ -93,12 +77,6 @@
 		<property name="umProjectsDir" value=""/>
 	</target>
 	
-	<!-- REMOVE LATER- QUEUES WORKAROUND -->
-	<target name="initUMQueues" unless="umQueues">
-		<property name="umQueues" value=""/>
-	</target>
-	
-	
 	<target name="initTestPackageNamePattern" unless="testPackageNamePattern">
 		<property name="testPackageNamePattern" value=""/>
 	</target>
@@ -110,13 +88,13 @@
 
 	
 	<!--Main Init targets-->
-	<target name="initSystemProperties" depends="initSAGHome,initABEHome,initABEBuildfileDir,initABEBuildfileFile,initDeployerInstallationPath,initDeployerExecutable,initDeployerAutomatorExecutable,initDeployerHost,initDeployerPort,initDeployerUsername,initDeployerPassword">
+	<target name="initSystemProperties" depends="initSAGHome,initDeployerInstallationPath,initDeployerExecutable,initDeployerAutomatorExecutable,initDeployerHost,initDeployerPort,initDeployerUsername,initDeployerPassword">
 	</target>
 	
-	<target name="initMandatoryProperties" depends="initProjcetName,initBuildOutputDir,initABEBuildProperties,initRepositoryName,initDeployerProjectDefinition">
+	<target name="initMandatoryProperties" depends="initProjcetName,initBuildOutputDir,initRepositoryName,initDeployerProjectDefinition">
 	</target>
 	
-	<target name="initOptionalProperties" depends="initISProjectsDir,initISConfigDir,initBPMProjectsDir,initMWSProjectsDir,initRulesProjectsDir,initUMProjectDir,initUMQueues,initTestPackageNamePattern,initJenkinsReportDir">
+	<target name="initOptionalProperties" depends="initISProjectsDir,initISConfigDir,initBPMProjectsDir,initMWSProjectsDir,initRulesProjectsDir,initUMProjectDir,initTestPackageNamePattern,initJenkinsReportDir">
 	</target>
 		
 	<target name="initProject" depends="initSystemProperties,initMandatoryProperties,initOptionalProperties" description="init properties needed for the project">
