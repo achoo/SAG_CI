@@ -3,18 +3,51 @@
 	
 	<xsl:output method="xml" encoding="utf-8" indent="yes"/>
 	
+	<xsl:param name="deployerHost"/>
+	<xsl:param name="deployerPort"/>
+	<xsl:param name="deployerUsername"/>
+	<xsl:param name="deployerPassword"/>
+	
+	<xsl:param name="targetISHost"/>
+	<xsl:param name="targetISPort"/>
+	<xsl:param name="targetISUsername"/>
+	<xsl:param name="targetISPassword"/>
+	
 	<xsl:param name="repoName"/>
 	<xsl:param name="repoPath"/>
 	<xsl:param name="projectName"/>
 		
-	
-	
 	<xsl:template match="@*|node()">
 		<xsl:copy>
 			<xsl:apply-templates select="@*|node()" />
 		</xsl:copy>
 	</xsl:template>
 	
+	<xsl:template match="DeployerSpec/DeployerServer">
+		<DeployerServer>
+			<host><xsl:value-of select="$deployerHost"/>:<xsl:value-of select="$deployerPort"/></host>
+			<user><xsl:value-of select="$deployerUsername"/></user>
+			<pwd><xsl:value-of select="$deployerPassword"/></pwd>
+		</DeployerServer>
+	</xsl:template>
+
+	<xsl:template match="DeployerSpec/Environment">
+	    <Environment>
+			<IS>
+				<isalias name="target">
+					<host><xsl:value-of select="$targetISHost"/></host>
+					<port><xsl:value-of select="$targetISPort"/></port>
+					<user><xsl:value-of select="$targetISUsername"/></user>
+					<pwd><xsl:value-of select="$targetISPassword"/></pwd>
+					<useSSL>false</useSSL>
+					<installDeployerResource>true</installDeployerResource>
+					<Test>true</Test>
+				</isalias>
+			</IS>
+			<xsl:apply-templates select="@* | *" />
+		</Environment>
+	</xsl:template>
+
 	
 	<xsl:template match="DeployerSpec/Environment/Repository">
 		<Repository>
@@ -48,7 +81,7 @@
 				
 				<DeploymentMap description="" name="myDeploymentMap"/>			
 				<MapSetMapping mapName="myDeploymentMap" setName="myDeploymentSet">								
-					<alias type="IS">local</alias>
+					<alias type="IS">target</alias>
 				</MapSetMapping>	
 				<DeploymentCandidate description="" mapName="myDeploymentMap" name="myDeployment"/>
 			</Project>

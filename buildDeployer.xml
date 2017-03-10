@@ -18,7 +18,7 @@
 		<echo message="Start deploying ${projectName}" />
 	</target>
 
-        <!-- determine which PA and Deployer executables are used - different for Windows and Unix -->
+    <!-- determine which PA and Deployer executables are used - different for Windows and Unix -->
 	<condition property="isWindows">
 		<os family="windows" />
 	</condition>
@@ -51,8 +51,21 @@
 		</if>	
 	</target>
 	
-	<target name="setupDeployerSpec">				
+	<target name="setupDeployerSpec" description="Creates the project automator xml with XSLT based on the given variables.">				
 		<xslt style="${initialXSLT}" in="${deployerProjectDefinitionTemplate}" out="${deployerProjectDefinition}">
+			<!--build/deployer server props -->
+			<param name="deployerHost" expression="${deployerHost}" />
+			<param name="deployerPort" expression="${deployerPort}" />
+			<param name="deployerUsername" expression="${deployerUsername}" />
+			<param name="deployerPassword" expression="${deployerPassword}" />
+			
+			<!--target server props -->
+			<param name="targetISHost" expression="${targetISHost}" />
+			<param name="targetISPort" expression="${targetISPort}" />
+			<param name="targetISUsername" expression="${targetISUsername}" />
+			<param name="targetISPassword" expression="${targetISPassword}" />
+			
+			<!-- general props -->
 			<param name="repoName" expression="${repositoryName}" />
 			<param name="repoPath" expression="${buildOutputDir}" />
 			<param name="projectName" expression="${projectName}" />				
