@@ -11,12 +11,33 @@
 	<!-- XSLT for the Deployer Project Specification - adding Repository and Project Sections -->
 	<property name="initialXSLT" value="resources/setUpInitial.xslt"/>
 	
-	<target name="deployWM" description="main deploy task" depends="startDeployment, createDeployerSpec,execProjectAutomator,createUmQueues,triggerDeploy">
+	<target name="deployWM" description="main deploy task" depends="startDeployment, initPAandDeployerWindows, initPAandDeployerUnix, createDeployerSpec,execProjectAutomator,triggerDeploy">
 	</target>
-	
+
 	<target name="startDeployment">		
 		<echo message="Start deploying ${projectName}" />
 	</target>
+
+        <!-- determine which PA and Deployer executables are used - different for Windows and Unix -->
+	<condition property="isWindows">
+		<os family="windows" />
+	</condition>
+
+	<condition property="isUnix">
+		<os family="unix" />
+	</condition>
+
+	<target name="initPAandDeployerWindows" if="isWindows">
+		<property name="deployerExecutable" value="Deployer.bat" />
+		<property name="deployerAutomatorExecutable" value="projectautomator.bat" />
+	</target>
+
+	<target name="initPAandDeployerUnix" if="isUnix">
+		<property name="deployerExecutable" value="Deployer.sh" />
+		<property name="deployerAutomatorExecutable" value="projectautomatorUnix.sh" />
+	</target>
+	<!-- determine which PA and Deployer executables are used - different for Windows and Unix -->
+        
 		
 	<target name="createDeployerSpec" depends="cleanupDeployerSpec,setupDeployerSpec">		
 	</target>
@@ -36,32 +57,6 @@
 			<param name="repoPath" expression="${buildOutputDir}" />
 			<param name="projectName" expression="${projectName}" />				
 		</xslt>				
-	</target>
-	
-		
-	<target name="createUmQueues">
-		<!-- can be extracted later in a separate environment -->
-		<property name="jmsConnectionAlias" value="DEFAULT_IS_JMS_CONNECTION"/>
-		
-		<for list="${umQueues}" delimiter=";" param="umQueue">			
-			<sequential>
-				<echo message="Create JMS Queue @{umQueue}"/>
-				<trycatch>
-					<try>			
-						<get src="http://${deployerHost}:${deployerPort}/invoke/wm.server.jms/createQueue?aliasName=${jmsConnectionAlias}&amp;queueName=@{umQueue}&amp;override=false" 								
-							dest="temp/httpout.txt"
-							verbose="false"													
-							username="${deployerUsername}"
-							password="${deployerPassword}"
-							usetimestamp="true"/>
-					</try>
-					<catch>
-						<echo message="Creation of  JMS Queue @{umQueue} failed. Check if the queue already exists. If not - check the deployer host/port and its credentials."/>
-					</catch>
-					<finally/>				
-				</trycatch>
-			</sequential>
-		</for>		
 	</target>
 	
 		

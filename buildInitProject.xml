@@ -10,14 +10,6 @@
 		<fail message="System property 'deployerInstallationPath' should be defined!"/>
 	</target>
 
-	<target name="initDeployerExecutable" unless="deployerExecutable">
-		<fail message="System property 'deployerExecutable' should be defined!"/>
-	</target>
-
-	<target name="initDeployerAutomatorExecutable" unless="deployerAutomatorExecutable">
-		<fail message="System property 'deployerAutomatorExecutable' should be defined!"/>
-	</target>
-
 	<target name="initDeployerHost" unless="deployerHost">
 		<fail message="System property 'deployerHost' should be defined!"/>
 	</target>
@@ -88,7 +80,7 @@
 
 	
 	<!--Main Init targets-->
-	<target name="initSystemProperties" depends="initSAGHome,initDeployerInstallationPath,initDeployerExecutable,initDeployerAutomatorExecutable,initDeployerHost,initDeployerPort,initDeployerUsername,initDeployerPassword">
+	<target name="initSystemProperties" depends="initSAGHome,initDeployerInstallationPath,initDeployerHost,initDeployerPort,initDeployerUsername,initDeployerPassword">
 	</target>
 	
 	<target name="initMandatoryProperties" depends="initProjcetName,initBuildOutputDir,initRepositoryName,initDeployerProjectDefinition">
