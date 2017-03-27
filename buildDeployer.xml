@@ -60,10 +60,10 @@
 			<param name="deployerPassword" expression="${deployerPassword}" />
 			
 			<!--target server props -->
-			<param name="targetISHost" expression="${targetISHost}" />
-			<param name="targetISPort" expression="${targetISPort}" />
-			<param name="targetISUsername" expression="${targetISUsername}" />
-			<param name="targetISPassword" expression="${targetISPassword}" />
+			<param name="testISHost" expression="${testISHost}" />
+			<param name="testISPort" expression="${testISPort}" />
+			<param name="testISUsername" expression="${testISUsername}" />
+			<param name="testISPassword" expression="${testISPassword}" />
 			
 			<!-- general props -->
 			<param name="repoName" expression="${repositoryName}" />

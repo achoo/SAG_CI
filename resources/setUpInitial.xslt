@@ -8,10 +8,10 @@
 	<xsl:param name="deployerUsername"/>
 	<xsl:param name="deployerPassword"/>
 	
-	<xsl:param name="targetISHost"/>
-	<xsl:param name="targetISPort"/>
-	<xsl:param name="targetISUsername"/>
-	<xsl:param name="targetISPassword"/>
+	<xsl:param name="testISHost"/>
+	<xsl:param name="testISPort"/>
+	<xsl:param name="testISUsername"/>
+	<xsl:param name="testISPassword"/>
 	
 	<xsl:param name="repoName"/>
 	<xsl:param name="repoPath"/>
@@ -34,11 +34,11 @@
 	<xsl:template match="DeployerSpec/Environment">
 	    <Environment>
 			<IS>
-				<isalias name="target">
-					<host><xsl:value-of select="$targetISHost"/></host>
-					<port><xsl:value-of select="$targetISPort"/></port>
-					<user><xsl:value-of select="$targetISUsername"/></user>
-					<pwd><xsl:value-of select="$targetISPassword"/></pwd>
+				<isalias name="testServer">
+					<host><xsl:value-of select="$testISHost"/></host>
+					<port><xsl:value-of select="$testISPort"/></port>
+					<user><xsl:value-of select="$testISUsername"/></user>
+					<pwd><xsl:value-of select="$testISPassword"/></pwd>
 					<useSSL>false</useSSL>
 					<installDeployerResource>true</installDeployerResource>
 					<Test>true</Test>
@@ -81,7 +81,7 @@
 				
 				<DeploymentMap description="" name="myDeploymentMap"/>			
 				<MapSetMapping mapName="myDeploymentMap" setName="myDeploymentSet">								
-					<alias type="IS">target</alias>
+					<alias type="IS">testServer</alias>
 				</MapSetMapping>	
 				<DeploymentCandidate description="" mapName="myDeploymentMap" name="myDeployment"/>
 			</Project>
