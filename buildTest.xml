@@ -1,10 +1,7 @@
 <?xml version="1.0"?>
 <project name="test" default="startTest" basedir=".">
 
-        <!-- temp var -->
 	<property name="testSuitePackagesPath" value="${isTestDir}"/>
-
-	<property name="testPackageDirRelative" value="resources/test/"/>
 
 	<path id="junitClasspath">
 		<fileset dir="${SAGHome}/common/lib/ext" includes="enttoolkit.jar" />
@@ -65,22 +62,16 @@
 	<target name="junitInitTest">
 		<echo message="Init JUnit tests for package ${testPackageName}" />
 		
-		<property name="testPackageDir" value="${testPackageName}/${testPackageDirRelative}" />
-		<!--property name="testPackageXmlDir" value="${testPackageDir}/setup" /-->
-        <property name="testPackageXmlDir" value="${testPackageDir}" />
-		<property name="testPackageReportsDir" value="${testPackageDir}/reports" />
+		<property name="testPackageReportsDir" value="${testPackageName}/resources/reports" />
 	</target>
 	
 	<target name="junitCleanUp">
 		<delete dir="${testPackageReportsDir}" />								
 	</target>
 	
-	<target name="junitCheckTestFolder">
-		<available property="testPackageXmlDir.exists" file="${testPackageXmlDir}" type="dir" />
-	</target>
 
 	<!--execute only if the XML Test directory exists in the test package -->
-	<target name="junitTestAndReportXML" depends="junitInitTest,junitCleanUp,junitCheckTestFolder" if="testPackageXmlDir.exists">
+	<target name="junitTestAndReportXML" depends="junitInitTest,junitCleanUp">
 		<echo message="Starting JUnit tests for package '${testPackageName}'"/>
 		
 		<mkdir dir="${testPackageReportsDir}" />
@@ -90,7 +81,7 @@
 		<for param="testSetupFile" keepgoing="true">
 			<path>
 				<!--fileset dir="${testPackageXmlDir}" includes="*.xml" /-->
-				<fileset dir="${testPackageXmlDir}" includes="**/setup/*.xml" />
+				<fileset dir="${testPackageName}" includes="**/setup/*.xml" />
 			</path>
 			<sequential>
 				<basename property="fileBasename" file="@{testSetupFile}" suffix=".xml" />
@@ -101,7 +92,7 @@
 					<jvmarg value="-DwebMethods.integrationServer.userid=${testISUsername}" />
 					<jvmarg value="-DwebMethods.integrationServer.password=${testISPassword}" />
 					<jvmarg value="-DwebMethods.test.setup.filename=@{testSetupFile}" />
-					<jvmarg value="-Dresources.folder=${resourcesFolder}" />
+					<!--jvmarg value="-Dresources.folder=${resourcesFolder}" /-->
 					<classpath>
 						<path refid="junitClasspath" />
 					</classpath>
