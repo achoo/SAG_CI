@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<project name="Build and Deploy Solution" default="buildAndDeploy" basedir="." >
+<project name="Build and Deploy Solution" default="buildDeployTest" basedir="." >
 	<property file="${project.properties}"/>
 	<property file="System.properties"/>
         
@@ -17,14 +17,13 @@
 		
 	<target name="deploy" depends="initProject,deployWM">
 		<description>Deploy project.</description>
+	</target>
+
+        <target name="test" depends="initProject,startTest">
+		<description>Run tests.</description>
 	</target>	
 	
-	<target name="buildAndDeploy" depends="build, deploy, runTests">
+	<target name="buildDeployTest" depends="build, deploy, test">
 		<description>Build and deploy the project.</description>
 	</target>
-	
-	<target name="runTests" depends="initProject,startTest">
-		<description>Run tests.</description>
-	</target>
-	
 </project>
